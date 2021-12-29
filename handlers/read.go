@@ -12,6 +12,10 @@ func ReadOneHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(types.OperationResult{Error: err.Error()})
 	}
 
+	if request.Operation != types.ReadOperationName {
+		return ctx.Status(fiber.StatusBadRequest).JSON(types.OperationResult{Error: "invalid operation name"})
+	}
+
 	result, err := operations.ReadOne(request)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(result)
@@ -23,6 +27,10 @@ func ReadManyHandler(ctx *fiber.Ctx) error {
 	var request types.OperationRequestReadMany
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(types.OperationResult{Error: err.Error()})
+	}
+
+	if request.Operation != types.ReadOperationName {
+		return ctx.Status(fiber.StatusBadRequest).JSON(types.OperationResult{Error: "invalid operation name"})
 	}
 
 	result, err := operations.ReadMany(request)
