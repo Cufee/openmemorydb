@@ -68,6 +68,8 @@ func matchWithCursor(bucket *bolt.Bucket, filter map[string]interface{}, limit i
 
 		matched := database.CompareMaps(filter, document)
 		if matched {
+			logs.Debug("matched document: %v", document)
+			logs.Debug("matched filter: %v", filter)
 			result = append(result, document)
 		}
 		if limit > 0 && len(result) >= limit {

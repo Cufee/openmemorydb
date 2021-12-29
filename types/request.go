@@ -49,14 +49,12 @@ type OperationRequestUpdateMany struct {
 }
 
 // Request information for delete handlers
-type DeleteOptions struct {
-	Filter Filter `json:"filter"`
-}
 type OperationRequestDeleteOne struct {
 	OperationRequestBase
-	Delete DeleteOptions `json:"deleteOption"`
+	Filter Filter `json:"filter"`
 }
 type OperationRequestDeleteMany struct {
 	OperationRequestBase
-	Delete []DeleteOptions `json:"deleteOption"`
+	Filter Filter `json:"filter"`
+	Limit  int    `json:"limit"`
 }

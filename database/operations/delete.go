@@ -14,9 +14,9 @@ func DeleteMany(request types.OperationRequestDeleteMany) (*types.OperationResul
 		return nil, logs.Wrap(err, "failed to get driver")
 	}
 
-	result, err := d.DeleteMany(request.Database, request.Collection, request.Delete)
+	result, err := d.DeleteMany(request.Database, request.Collection, request.Filter, request.Limit)
 	if err != nil {
-		return nil, logs.Wrap(err, "failed to delete document")
+		return &result, logs.Wrap(err, "failed to delete document")
 	}
 	if result.Error != "" {
 		return &result, errors.New(result.Error)
@@ -28,6 +28,7 @@ func DeleteOne(request types.OperationRequestDeleteOne) (*types.OperationResult,
 	var requestMany types.OperationRequestDeleteMany
 	requestMany.Database = request.Database
 	requestMany.Collection = request.Collection
-	requestMany.Delete = []types.DeleteOptions{request.Delete}
+	requestMany.Filter = request.Filter
+	requestMany.Limit = 1
 	return DeleteMany(requestMany)
 }
