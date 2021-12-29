@@ -1,16 +1,23 @@
 package types
 
 type Document map[string]interface{}
+
+func (o Document) IsValid() bool {
+	return o != nil
+}
+
 type Filter map[string]interface{}
 
 // Base information for all handlers, this should not be used directly
 type OperationRequestBase struct {
 	Database   string `json:"database"`
 	Collection string `json:"collection"`
-	Operation  string `json:"operation"` // Not user, wii be used by the handler to check if the opertions match the handler
+	Operation  string `json:"operation"` // Used to validate the request
 }
 
 // Reqeust information for create handler
+const CreateOperationName = "create"
+
 type OperationRequestCreateOne struct {
 	OperationRequestBase
 	Document Document `json:"document"`
@@ -21,12 +28,12 @@ type OperationRequestCreateMany struct {
 }
 
 // Request information for read handlers
+const ReadOperationName = "read"
+
 type OperationRequestReadOne struct {
 	OperationRequestBase
 	Filter Filter `json:"filter"`
 }
-
-// Request information for read handlers
 type OperationRequestReadMany struct {
 	OperationRequestBase
 	Filter Filter `json:"filter"`
@@ -34,11 +41,18 @@ type OperationRequestReadMany struct {
 }
 
 // Request information for update handlers
+const UpdateOperationName = "update"
+
 type UpdateOptions struct {
 	Filter Filter   `json:"filter"`
 	Update Document `json:"update"`
 	Upsert bool     `json:"upsert"`
 }
+
+func (o *UpdateOptions) IsValid() bool {
+	return o.Filter != nil && o.Update.IsValid()
+}
+
 type OperationRequestUpdateOne struct {
 	OperationRequestBase
 	Update UpdateOptions `json:"updateOption"`
@@ -49,12 +63,23 @@ type OperationRequestUpdateMany struct {
 }
 
 // Request information for delete handlers
+const DeleteOperationName = "delete"
+
+type DeleteOptions struct {
+	Filter    Filter `json:"filter"`
+	AcceptNil bool   `json:"acceptNil"`
+}
+
+func (o DeleteOptions) IsValid() bool {
+	return !(o.Filter == nil && !o.AcceptNil)
+}
+
 type OperationRequestDeleteOne struct {
+	DeleteOptions
 	OperationRequestBase
-	Filter Filter `json:"filter"`
 }
 type OperationRequestDeleteMany struct {
+	DeleteOptions
 	OperationRequestBase
-	Filter Filter `json:"filter"`
-	Limit  int    `json:"limit"`
+	Limit int `json:"limit"`
 }

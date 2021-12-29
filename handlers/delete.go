@@ -12,6 +12,14 @@ func DeleteOneHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(types.OperationResult{Error: err.Error()})
 	}
 
+	if request.Operation != types.DeleteOperationName {
+		return ctx.Status(fiber.StatusBadRequest).JSON(types.OperationResult{Error: "invalid operation name"})
+	}
+
+	if !request.IsValid() {
+		return ctx.Status(fiber.StatusBadRequest).JSON(types.OperationResult{Error: "invalid request"})
+	}
+
 	result, err := operations.DeleteOne(request)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(result)
@@ -23,6 +31,14 @@ func DeleteManyHandler(ctx *fiber.Ctx) error {
 	var request types.OperationRequestDeleteMany
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(types.OperationResult{Error: err.Error()})
+	}
+
+	if request.Operation != types.DeleteOperationName {
+		return ctx.Status(fiber.StatusBadRequest).JSON(types.OperationResult{Error: "invalid operation name"})
+	}
+
+	if !request.IsValid() {
+		return ctx.Status(fiber.StatusBadRequest).JSON(types.OperationResult{Error: "invalid request"})
 	}
 
 	result, err := operations.DeleteMany(request)
